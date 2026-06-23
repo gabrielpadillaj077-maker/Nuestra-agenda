@@ -1,41 +1,165 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <title>Nuestra Agenda ❤️</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta charset="UTF-8">
-  <style>
-    body { background: #0a0a0a; color: white; font-family: Arial; padding: 20px; max-width: 700px; margin: auto }
-    input, textarea, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #333; background: #111; color: white; box-sizing: border-box; font-size: 16px }
-    button { background: linear-gradient(90deg, #ff4d6d, #ff8fab); border: none; font-weight: bold; cursor: pointer }
-    button:active { transform: scale(0.98) }
-    .evento { background: #1a1a1a; padding: 15px; border-radius: 12px; margin: 10px 0; border-left: 4px solid #ff4d6d }
-    .fecha { color: #ff8fab; font-size: 14px; margin-bottom: 8px }
-    .login { text-align: center; padding: 50px 20px }
-    h1, h3 { text-align: center }
-    label { font-size: 14px; color: #ccc }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nuestra Agenda ❤️</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+.container {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    max-width: 600px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+h1 { color: #667eea; text-align: center; margin-bottom: 10px; }
+.login-screen { text-align: center; }
+.login-screen input {
+    width: 100%; padding: 15px; margin: 15px 0;
+    border: 2px solid #667eea; border-radius: 10px;
+    font-size: 16px;
+}
+button {
+    background: #667eea; color: white; border: none;
+    padding: 15px 30px; border-radius: 10px;
+    font-size: 16px; cursor: pointer; width: 100%;
+    font-weight: bold;
+}
+button:hover { background: #5568d3; }
+.app-screen { display: none; }
+input, textarea {
+    width: 100%; padding: 12px; margin: 8px 0;
+    border: 2px solid #e0e0e0; border-radius: 8px;
+}
+.event {
+    background: #f8f9ff; padding: 15px; margin: 10px 0;
+    border-left: 4px solid #667eea; border-radius: 8px;
+}
+.delete-btn {
+    background: #ff4757; padding: 8px 15px;
+    font-size: 14px; margin-top: 10px; width: auto;
+}
+</style>
 </head>
 <body>
+<div class="container">
+    <div id="loginScreen" class="login-screen">
+        <h1>🔒 Nuestra Agenda</h1>
+        <p>Solo para nosotros dos ❤️</p>
+        <input type="password" id="clave" placeholder="Pon la clave aquí">
+        <button onclick="entrar()">Entrar</button>
+        <p style="margin-top: 15px; font-size: 14px; color: #666;">Clave: amor2026</p>
+    </div>
 
-<div id="login" class="login">
-  <h1>❤️ Nuestra Agenda</h1>
-  <p>Clave compartida para entrar los dos:</p>
-  <input id="clave" placeholder="Ej: nosotros-14feb2024">
-  <button onclick="entrar()">Entrar</button>
-  <p style="font-size:12px; color:gray">Pongan la misma clave = ven lo mismo</p>
+    <div id="appScreen" class="app-screen">
+        <h1>📅 Nuestra Agenda</h1>
+        <div style="background: #f0f4ff; padding: 20px; border-radius: 10px; margin: 20px 0;">
+            <h3>Agregar cita/recuerdo</h3>
+            <input type="text" id="titulo" placeholder="Título: Ej: Nuestro aniversario">
+            <input type="date" id="fecha">
+            <input type="text" id="posicion" placeholder="Posición: Ej: Meta">
+            <textarea id="nota" placeholder="Nota: Ej: Lo que sentiste ese día..." rows="3"></textarea>
+            <input type="text" id="recordatorio" placeholder="Recordatorio: Ej: Avísame 1 día antes">
+            <button onclick="guardar()">Guardar</button>
+        </div>
+        <div id="listaEventos"></div>
+        <button onclick="salir()" style="background: #666; margin-top: 20px;">Salir</button>
+    </div>
 </div>
 
-<div id="app" style="display:none">
-  <h1>❤️ Agenda de Nosotros</h1>
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { getDatabase, ref, push, onValue, remove } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 
-  <h3>Agregar cita/recuerdo:</h3>
-  <input id="titulo" placeholder="Ej: Nuestro aniversario">
-  <input id="fecha" type="date">
-  <textarea id="nota" rows="3" placeholder="Nota, lo que sentiste ese día..."></textarea>
+const firebaseConfig = {
+    apiKey: "AIzaSyBxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    authDomain: "nuestra-agenda.firebaseapp.com",
+    databaseURL: "https://nuestra-agenda-default-rtdb.firebaseio.com",
+    projectId: "nuestra-agenda",
+    storageBucket: "nuestra-agenda.appspot.com",
+    messagingSenderId: "123456789",
+    appId: "1:123456789:web:abc123"
+};
 
-  <div style="margin: 15px 0">
-    <label><input type="checkbox" id="recordatorio"> Avisarme 1 día antes 🔔</label>
-  </div>
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const CLAVE_CORRECTA = "amor2026";
 
-  <button onclick="guardar()">💾 Guardar</button
+window.entrar = function() {
+    const clave = document.getElementById('clave').value.trim();
+    if(clave === CLAVE_CORRECTA) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('appScreen').style.display = 'block';
+        cargarEventos();
+    } else {
+        alert('Clave incorrecta. La clave es: amor2026');
+    }
+}
+
+window.guardar = function() {
+    const titulo = document.getElementById('titulo').value;
+    const fecha = document.getElementById('fecha').value;
+    const posicion = document.getElementById('posicion').value;
+    const nota = document.getElementById('nota').value;
+    const recordatorio = document.getElementById('recordatorio').value;
+    
+    if(!titulo || !fecha) {
+        alert('Título y fecha son obligatorios');
+        return;
+    }
+    
+    push(ref(db, 'eventos'), {titulo, fecha, posicion, nota, recordatorio, fechaCreacion: Date.now()});
+    
+    document.getElementById('titulo').value = '';
+    document.getElementById('fecha').value = '';
+    document.getElementById('posicion').value = '';
+    document.getElementById('nota').value = '';
+    document.getElementById('recordatorio').value = '';
+    alert('Guardado! ❤️');
+}
+
+function cargarEventos() {
+    onValue(ref(db, 'eventos'), (snapshot) => {
+        const lista = document.getElementById('listaEventos');
+        lista.innerHTML = '<h3>Tus citas y recuerdos:</h3>';
+        snapshot.forEach((child) => {
+            const e = child.val();
+            lista.innerHTML += `
+                <div class="event">
+                    <strong>${e.titulo}</strong><br>
+                    📅 ${e.fecha}<br>
+                    📍 ${e.posicion || 'Sin posición'}<br>
+                    📝 ${e.nota || 'Sin nota'}<br>
+                    ⏰ ${e.recordatorio || 'Sin recordatorio'}<br>
+                    <button class="delete-btn" onclick="borrar('${child.key}')">Borrar</button>
+                </div>
+            `;
+        });
+    });
+}
+
+window.borrar = function(id) {
+    if(confirm('¿Borrar este evento?')) {
+        remove(ref(db, 'eventos/' + id));
+    }
+}
+
+window.salir = function() {
+    document.getElementById('appScreen').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'block';
+    document.getElementById('clave').value = '';
+}
+</script>
+</body>
+</html>
