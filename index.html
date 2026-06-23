@@ -6,57 +6,135 @@
 <title>Nuestra Agenda ❤️</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+    --morado: #8B5CF6;
+    --celeste: #06B6D4;
+    --azul: #3B82F6;
+    --fondo: linear-gradient(135deg, var(--morado) 0%, var(--celeste) 50%, var(--azul) 100%);
+}
 body {
     font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--fondo);
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 20px;
+    transition: 0.3s;
+}
+body.dark {
+    --fondo: linear-gradient(135deg, #4C1D95 0%, #0E7490 50%, #1E40AF 100%);
+    background: var(--fondo);
 }
 .container {
     background: white;
     border-radius: 20px;
     padding: 30px;
-    max-width: 600px;
+    max-width: 700px;
     width: 100%;
     box-shadow: 0 20px 60px rgba(0,0,0,0.3);
 }
-h1 { color: #667eea; text-align: center; margin-bottom: 10px; }
+body.dark .container { background: #1f2937; color: #f3f4f6; }
+h1 { 
+    background: linear-gradient(135deg, var(--morado), var(--azul));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center; 
+    margin-bottom: 5px; 
+    font-size: 32px;
+}
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.contador {
+    background: linear-gradient(135deg, var(--morado), var(--azul));
+    color: white;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 14px;
+}
+.theme-btn {
+    background: none;
+    border: 2px solid var(--morado);
+    color: var(--morado);
+    padding: 8px 12px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    width: auto;
+}
 .login-screen { text-align: center; }
 .login-screen input {
     width: 100%; padding: 15px; margin: 15px 0;
-    border: 2px solid #667eea; border-radius: 10px;
+    border: 2px solid var(--morado); border-radius: 10px;
     font-size: 16px;
 }
+body.dark .login-screen input { background: #374151; color: white; border-color: var(--celeste); }
 button {
-    background: #667eea; color: white; border: none;
+    background: linear-gradient(135deg, var(--morado) 0%, var(--azul) 100%);
+    color: white; border: none;
     padding: 15px 30px; border-radius: 10px;
     font-size: 16px; cursor: pointer; width: 100%;
     font-weight: bold;
+    transition: 0.2s;
 }
-button:hover { background: #5568d3; }
+button:hover { 
+    background: linear-gradient(135deg, #7C3AED 0%, #2563EB 100%);
+    transform: scale(1.02);
+}
 .app-screen { display: none; }
 input, textarea {
     width: 100%; padding: 12px; margin: 8px 0;
     border: 2px solid #e0e0e0; border-radius: 8px;
+    font-size: 15px;
 }
+body.dark input, body.dark textarea { 
+    background: #374151; 
+    color: white; 
+    border-color: #4b5563; 
+}
+.form-box {
+    background: #f0f4ff; 
+    padding: 20px; 
+    border-radius: 15px; 
+    margin: 20px 0;
+    border: 2px solid var(--celeste);
+}
+body.dark .form-box { background: #2d3748; border-color: var(--morado); }
 .event {
     background: #f8f9ff; padding: 15px; margin: 10px 0;
-    border-left: 4px solid #667eea; border-radius: 8px;
+    border-left: 5px solid var(--morado); border-radius: 10px;
+    transition: 0.2s;
+}
+body.dark .event { background: #2d3748; border-left-color: var(--celeste); }
+.event:hover { transform: translateX(5px); }
+.event img {
+    max-width: 100%;
+    border-radius: 10px;
+    margin-top: 10px;
 }
 .delete-btn {
-    background: #ff4757; padding: 8px 15px;
+    background: linear-gradient(135deg, #ff4757, #ff3742);
+    padding: 8px 15px;
     font-size: 14px; margin-top: 10px; width: auto;
 }
+label { font-weight: bold; color: var(--morado); margin-top: 8px; display: block; }
 </style>
 </head>
 <body>
 <div class="container">
+    <div class="top-bar">
+        <div class="contador" id="contadorDias">Cargando...</div>
+        <button class="theme-btn" onclick="toggleTheme()">🌙</button>
+    </div>
+
     <div id="loginScreen" class="login-screen">
         <h1>🔒 Nuestra Agenda</h1>
-        <p>Solo para nosotros dos ❤️</p>
+        <p style="color: #666; margin-bottom: 20px;">Solo para nosotros dos ❤️</p>
         <input type="password" id="clave" placeholder="Pon la clave aquí">
         <button onclick="entrar()">Entrar</button>
         <p style="margin-top: 15px; font-size: 14px; color: #666;">Clave: amor2026</p>
@@ -64,14 +142,16 @@ input, textarea {
 
     <div id="appScreen" class="app-screen">
         <h1>📅 Nuestra Agenda</h1>
-        <div style="background: #f0f4ff; padding: 20px; border-radius: 10px; margin: 20px 0;">
-            <h3>Agregar cita/recuerdo</h3>
+        <div class="form-box">
+            <h3 style="color: var(--morado); margin-bottom: 15px;">Agregar cita/recuerdo</h3>
             <input type="text" id="titulo" placeholder="Título: Ej: Nuestro aniversario">
             <input type="date" id="fecha">
             <input type="text" id="posicion" placeholder="Posición: Ej: Meta">
             <textarea id="nota" placeholder="Nota: Ej: Lo que sentiste ese día..." rows="3"></textarea>
+            <label>📸 Foto del recuerdo:</label>
+            <input type="file" id="foto" accept="image/*">
             <input type="text" id="recordatorio" placeholder="Recordatorio: Ej: Avísame 1 día antes">
-            <button onclick="guardar()">Guardar</button>
+            <button onclick="guardar()">Guardar ❤️</button>
         </div>
         <div id="listaEventos"></div>
         <button onclick="salir()" style="background: #666; margin-top: 20px;">Salir</button>
@@ -96,53 +176,105 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const CLAVE_CORRECTA = "amor2026";
 
+// 1. CONTADOR DE DÍAS - CAMBIA ESTA FECHA POR CUANDO EMPEZARON USTEDES
+const FECHA_INICIO = "2024-06-15"; // <-- PON AQUÍ SU FECHA YYYY-MM-DD
+
+function actualizarContador() {
+    const inicio = new Date(FECHA_INICIO);
+    const hoy = new Date();
+    const diff = Math.floor((hoy - inicio) / (1000 * 60 * 60 * 24));
+    document.getElementById('contadorDias').innerHTML = `❤️ Llevan ${diff} días juntos`;
+}
+
+// 2. MODO NOCHE
+function toggleTheme() {
+    document.body.classList.toggle('dark');
+    const btn = document.querySelector('.theme-btn');
+    btn.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
+    localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+}
+
+// Cargar tema guardado
+if(localStorage.getItem('theme') === 'dark') {
+    document.body.classList.add('dark');
+    document.querySelector('.theme-btn').textContent = '☀️';
+}
+
 window.entrar = function() {
     const clave = document.getElementById('clave').value.trim();
     if(clave === CLAVE_CORRECTA) {
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('appScreen').style.display = 'block';
+        actualizarContador();
         cargarEventos();
     } else {
         alert('Clave incorrecta. La clave es: amor2026');
     }
 }
 
+// 3. GUARDAR CON FOTO
 window.guardar = function() {
     const titulo = document.getElementById('titulo').value;
     const fecha = document.getElementById('fecha').value;
     const posicion = document.getElementById('posicion').value;
     const nota = document.getElementById('nota').value;
     const recordatorio = document.getElementById('recordatorio').value;
+    const fotoInput = document.getElementById('foto');
     
     if(!titulo || !fecha) {
         alert('Título y fecha son obligatorios');
         return;
     }
     
-    push(ref(db, 'eventos'), {titulo, fecha, posicion, nota, recordatorio, fechaCreacion: Date.now()});
+    if(fotoInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            guardarEvento(e.target.result);
+        }
+        reader.readAsDataURL(fotoInput.files[0]);
+    } else {
+        guardarEvento('');
+    }
+}
+
+function guardarEvento(fotoBase64) {
+    const evento = {
+        titulo: document.getElementById('titulo').value,
+        fecha: document.getElementById('fecha').value,
+        posicion: document.getElementById('posicion').value,
+        nota: document.getElementById('nota').value,
+        recordatorio: document.getElementById('recordatorio').value,
+        foto: fotoBase64,
+        fechaCreacion: Date.now()
+    };
+    
+    push(ref(db, 'eventos'), evento);
     
     document.getElementById('titulo').value = '';
     document.getElementById('fecha').value = '';
     document.getElementById('posicion').value = '';
     document.getElementById('nota').value = '';
     document.getElementById('recordatorio').value = '';
-    alert('Guardado! ❤️');
+    document.getElementById('foto').value = '';
+    alert('Guardado con amor ❤️');
 }
 
 function cargarEventos() {
     onValue(ref(db, 'eventos'), (snapshot) => {
         const lista = document.getElementById('listaEventos');
-        lista.innerHTML = '<h3>Tus citas y recuerdos:</h3>';
+        lista.innerHTML = '<h3 style="color: var(--morado); margin: 20px 0;">Tus citas y recuerdos:</h3>';
         snapshot.forEach((child) => {
             const e = child.val();
+            const fotoHTML = e.foto ? `<img src="${e.foto}" alt="Foto recuerdo">` : '';
             lista.innerHTML += `
                 <div class="event">
-                    <strong>${e.titulo}</strong><br>
+                    <strong style="font-size: 18px;">${e.titulo}</strong><br>
                     📅 ${e.fecha}<br>
                     📍 ${e.posicion || 'Sin posición'}<br>
                     📝 ${e.nota || 'Sin nota'}<br>
                     ⏰ ${e.recordatorio || 'Sin recordatorio'}<br>
-                    <button class="delete-btn" onclick="borrar('${child.key}')">Borrar</button>
+                    ${fotoHTML}
+                    <button class="delete-btn" onclick="borrar('${child.key}')">🗑️ Borrar</button>
                 </div>
             `;
         });
@@ -150,7 +282,7 @@ function cargarEventos() {
 }
 
 window.borrar = function(id) {
-    if(confirm('¿Borrar este evento?')) {
+    if(confirm('¿Borrar este recuerdo?')) {
         remove(ref(db, 'eventos/' + id));
     }
 }
