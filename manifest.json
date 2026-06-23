@@ -1,0 +1,16 @@
+{
+  "name": "Nuestra Agenda",
+  "short_name": "Agenda",
+  "description": "Nuestra agenda de citas y recuerdos",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#8B5CF6",
+  "theme_color": "#8B5CF6",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>❤️</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    }
+  ]
+}
