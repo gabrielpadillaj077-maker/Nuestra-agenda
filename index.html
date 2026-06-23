@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Nuestra Agenda ❤️</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <style>
+    body { background: #0a0a0a; color: white; font-family: Arial; padding: 20px; max-width: 700px; margin: auto }
+    input, textarea, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #333; background: #111; color: white; box-sizing: border-box; font-size: 16px }
+    button { background: linear-gradient(90deg, #ff4d6d, #ff8fab); border: none; font-weight: bold; cursor: pointer }
+    button:active { transform: scale(0.98) }
+    .evento { background: #1a1a1a; padding: 15px; border-radius: 12px; margin: 10px 0; border-left: 4px solid #ff4d6d }
+    .fecha { color: #ff8fab; font-size: 14px; margin-bottom: 8px }
+    .login { text-align: center; padding: 50px 20px }
+    h1, h3 { text-align: center }
+    label { font-size: 14px; color: #ccc }
+  </style>
+</head>
+<body>
+
+<div id="login" class="login">
+  <h1>❤️ Nuestra Agenda</h1>
+  <p>Clave compartida para entrar los dos:</p>
+  <input id="clave" placeholder="Ej: nosotros-14feb2024">
+  <button onclick="entrar()">Entrar</button>
+  <p style="font-size:12px; color:gray">Pongan la misma clave = ven lo mismo</p>
+</div>
+
+<div id="app" style="display:none">
+  <h1>❤️ Agenda de Nosotros</h1>
+
+  <h3>Agregar cita/recuerdo:</h3>
+  <input id="titulo" placeholder="Ej: Nuestro aniversario">
+  <input id="fecha" type="date">
+  <textarea id="nota" rows="3" placeholder="Nota, lo que sentiste ese día..."></textarea>
+
+  <div style="margin: 15px 0">
+    <label><input type="checkbox" id="recordatorio"> Avisarme 1 día antes 🔔</label>
+  </div>
+
+  <button onclick="guardar()">💾 Guardar</button
